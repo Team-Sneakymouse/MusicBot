@@ -18,6 +18,9 @@ A cross-platform Discord music bot with a clean interface, and that is easy to s
 ## Fork Changes
 I'll be adding support for the music system used on the [TILII](http://tilii.tv) roleplay server
 
+## Fork Changes
+I'll be adding support for the music system used on the [TILII](http://tilii.tv) roleplay server
+
 ## Features
   * Easy to run (just make sure Java is installed, and run!)
   * Fast loading of songs
