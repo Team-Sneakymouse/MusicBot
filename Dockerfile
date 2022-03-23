@@ -1,9 +1,9 @@
-FROM eclipse-temurin:8
+FROM java:8-jdk-alpine
 
 WORKDIR /musicbot
 
-VOLUME ["/musicbot"]
+VOLUME ["/musicbot/config"]
 
-COPY target/JMusicBot-Snapshot-All.jar /JMusicBot-Snapshot-All.jar
+COPY target/JMusicBot-Snapshot-All.jar JMusicBot-Snapshot-All.jar
 
-CMD ["sh", "-c", "cp -f /JMusicBot-Snapshot-All.jar /musicbot/ && /opt/java/openjdk/bin/java -Dconfig=/musicbot/config/config.txt -Dnogui=true -jar /musicbot/JMusicBot-Snapshot-All.jar"]
+CMD ["java", "-Dconfig=/musicbot/config/config.txt", "-Dnogui=true", "-jar", "JMusicBot-Snapshot-All.jar"]
