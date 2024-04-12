@@ -89,7 +89,7 @@ public class TiliiCmd extends MusicCommand
             event.reply(event.getClient().getWarning()+" Eventually, you might be able to look up song codes on the TILII wiki...");
             return;
         }
-        String args = "https://media.tilii.tv/media/sound/"+event.getArgs().toLowerCase()+".ogg";
+        String args = "https://media.rawb.tv/music/"+event.getArgs().toLowerCase();
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(args).openConnection();
             connection.setRequestMethod("GET");
