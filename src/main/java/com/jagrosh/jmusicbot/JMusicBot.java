@@ -129,7 +129,7 @@ public class JMusicBot
 
             // check if something about the current startup is not supported
             String unsupportedReason = OtherUtil.getUnsupportedBotReason(jda);
-            if (unsupportedReason != null)
+            if (unsupportedReason != null && false)
             {
                 prompt.alert(Prompt.Level.ERROR, "JMusicBot", "JMusicBot cannot be run on this Discord bot: " + unsupportedReason);
                 try{ Thread.sleep(5000);}catch(InterruptedException ignored){} // this is awful but until we have a better way...
