@@ -1,4 +1,4 @@
-FROM eclipse-temurin:8
+FROM eclipse-temurin:11-jre-alpine
 
 WORKDIR /musicbot
 
