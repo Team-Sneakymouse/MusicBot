@@ -1,4 +1,5 @@
 FROM eclipse-temurin:11-jre-alpine
+RUN apk add --no-cache libstdc++
 
 WORKDIR /musicbot
 
