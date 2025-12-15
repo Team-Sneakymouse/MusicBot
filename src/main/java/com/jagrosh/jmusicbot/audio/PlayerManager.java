@@ -29,27 +29,25 @@ import com.sedmelluq.discord.lavaplayer.source.nico.NicoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
-import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import net.dv8tion.jda.api.entities.Guild;
 
 /**
  *
  * @author John Grosh (john.a.grosh@gmail.com)
  */
-public class PlayerManager extends DefaultAudioPlayerManager
-{
+public class PlayerManager extends DefaultAudioPlayerManager {
     private final Bot bot;
-    
-    public PlayerManager(Bot bot)
-    {
+
+    public PlayerManager(Bot bot) {
         this.bot = bot;
     }
-    
-    public void init()
-    {
-        TransformativeAudioSourceManager.createTransforms(bot.getConfig().getTransforms()).forEach(t -> registerSourceManager(t));
 
-        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true);
+    public void init() {
+        TransformativeAudioSourceManager.createTransforms(bot.getConfig().getTransforms())
+                .forEach(t -> registerSourceManager(t));
+
+        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager();
         yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
         registerSourceManager(yt);
 
@@ -66,29 +64,24 @@ public class PlayerManager extends DefaultAudioPlayerManager
 
         DuncteBotSources.registerAll(this, "en-US");
     }
-    
-    public Bot getBot()
-    {
+
+    public Bot getBot() {
         return bot;
     }
-    
-    public boolean hasHandler(Guild guild)
-    {
-        return guild.getAudioManager().getSendingHandler()!=null;
+
+    public boolean hasHandler(Guild guild) {
+        return guild.getAudioManager().getSendingHandler() != null;
     }
-    
-    public AudioHandler setUpHandler(Guild guild)
-    {
+
+    public AudioHandler setUpHandler(Guild guild) {
         AudioHandler handler;
-        if(guild.getAudioManager().getSendingHandler()==null)
-        {
+        if (guild.getAudioManager().getSendingHandler() == null) {
             AudioPlayer player = createPlayer();
             player.setVolume(bot.getSettingsManager().getSettings(guild).getVolume());
             handler = new AudioHandler(this, guild, player);
             player.addListener(handler);
             guild.getAudioManager().setSendingHandler(handler);
-        }
-        else
+        } else
             handler = (AudioHandler) guild.getAudioManager().getSendingHandler();
         return handler;
     }

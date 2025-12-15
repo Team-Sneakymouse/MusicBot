@@ -15,11 +15,6 @@
             <url>https://m2.dv8tion.net/releases</url>
         </repository>
         <repository>
-            <id>central</id>
-            <name>bintray</name>
-            <url>https://jcenter.bintray.com</url>
-        </repository>
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
             <snapshots>
@@ -28,47 +23,58 @@
             </snapshots>
         </repository>
         <repository>
-            <id>m2.duncte123.dev</id>
-            <name>m2-duncte123</name>
+            <id>duncte123</id>
+            <name>Duncte123's Maven Repository</name>
             <url>https://m2.duncte123.dev/releases</url>
         </repository>
         <repository>
-            <id>arbjergDev</id>
-            <name>Lavalink Repository</name>
-            <url>https://maven.lavalink.dev/releases</url>
+            <id>chew</id>
+            <name>Chew's Maven Repository</name>
+            <url>https://m2.chew.pro/releases</url>
+        </repository>
+        <repository>
+            <id>chew-snapshots</id>
+            <name>Chew's Maven Snapshots</name>
+            <url>https://m2.chew.pro/snapshots</url>
         </repository>
     </repositories>
 
     <dependencies>
-        <!-- Discord Dependencies -->
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.4.1_353</version>
+            <version>5.6.1</version>
         </dependency>
         <dependency>
-            <groupId>com.jagrosh</groupId>
-            <artifactId>jda-utilities</artifactId>
-            <version>3.0.5</version>
-            <type>pom</type>
+            <groupId>pw.chew</groupId>
+            <artifactId>jda-chewtils-command</artifactId>
+            <version>2.1</version>
         </dependency>
-
-        <!-- Music Dependencies -->
+        <dependency>
+            <groupId>pw.chew</groupId>
+            <artifactId>jda-chewtils-commons</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>pw.chew</groupId>
+            <artifactId>jda-chewtils-menu</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>pw.chew</groupId>
+            <artifactId>jda-chewtils-examples</artifactId>
+            <version>2.1</version>
+        </dependency>
         <dependency>
             <groupId>dev.arbjerg</groupId>
             <artifactId>lavaplayer</artifactId>
             <version>2.2.1</version>
         </dependency>
         <dependency>
-            <groupId>dev.lavalink.youtube</groupId>
-            <artifactId>common</artifactId>
-            <version>1.5.2</version>
+            <groupId>com.github.jagrosh</groupId>
+            <artifactId>JLyrics</artifactId>
+            <version>master-SNAPSHOT</version>
         </dependency>
-	<dependency>
-	    <groupId>com.github.jagrosh</groupId>
-	    <artifactId>JLyrics</artifactId>
-	    <version>master-SNAPSHOT</version>
-	</dependency>
         <dependency>
             <groupId>com.dunctebot</groupId>
             <artifactId>sourcemanagers</artifactId>
@@ -79,7 +85,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.13</version>
+            <version>1.4.14</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe</groupId>

@@ -21,8 +21,9 @@ import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.settings.Settings;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 
 import java.util.Optional;
@@ -62,7 +63,7 @@ public abstract class MusicCommand extends Command {
             return;
         }
         if (beListening) {
-            VoiceChannel current = event.getGuild().getSelfMember().getVoiceState().getChannel();
+            AudioChannel current = event.getGuild().getSelfMember().getVoiceState().getChannel();
             if (current == null)
                 current = settings.getVoiceChannel(event.getGuild());
 
@@ -70,14 +71,14 @@ public abstract class MusicCommand extends Command {
             if (!event.getAuthor().isBot())
                 userState = event.getMember().getVoiceState();
 
-            //if(!userState.inVoiceChannel() || userState.isDeafened() || (current!=null && !userState.getChannel().equals(current)))
-            if (userState != null && !userState.inVoiceChannel() && current == null) {
+            //if(!userState.inAudioChannel() || userState.isDeafened() || (current!=null && !userState.getChannel().equals(current)))
+            if (userState != null && !userState.inAudioChannel() && current == null) {
                 //event.replyError("You must be listening in "+(current==null ? "a voice channel" : "**"+current.getName()+"**")+" to use that!");
                 event.replyError("Either you or I must be listening in a voice channel to use that!");
                 return;
             }
 
-            VoiceChannel afkChannel = null;
+            AudioChannel afkChannel = null;
             if (!event.getAuthor().isBot())
                 afkChannel = userState.getGuild().getAfkChannel();
             //if(afkChannel != null && afkChannel.equals(userState.getChannel()))
@@ -86,21 +87,23 @@ public abstract class MusicCommand extends Command {
                 return;
             }
 
-            if (!event.getGuild().getSelfMember().getVoiceState().inVoiceChannel()) {
-                VoiceChannel vc = null;
-                    if(userState != null)
-                        vc = userState.getChannel();
-                    else {
-                        Optional<VoiceChannel> o = event.getGuild().getVoiceChannels().stream().filter(c -> c.getMembers().size() > 0).findFirst();
-                        vc = o.orElse(null);
-                    }
+            if (!event.getGuild().getSelfMember().getVoiceState().inAudioChannel()) {
+                AudioChannel vc = null;
+                if (userState != null)
+                    vc = userState.getChannel();
+                else {
+                    Optional<VoiceChannel> o = event.getGuild().getVoiceChannels().stream()
+                            .filter(c -> c.getMembers().size() > 0).findFirst();
+                    vc = o.orElse(null);
+                }
                 try {
                     event.getGuild().getAudioManager().openAudioConnection(vc);
                 } catch (PermissionException ex) {
-                    if(vc == null)
+                    if (vc == null)
                         event.reply(event.getClient().getError() + " I am unable to find a VC with people in it!");
                     else
-                        event.reply(event.getClient().getError() + " I am unable to connect to **" + vc.getName() + "**!");
+                        event.reply(
+                                event.getClient().getError() + " I am unable to connect to **" + vc.getName() + "**!");
                     return;
                 }
             }

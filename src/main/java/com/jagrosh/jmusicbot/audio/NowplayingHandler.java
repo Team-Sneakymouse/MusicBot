@@ -27,9 +27,11 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -37,66 +39,55 @@ import redis.clients.jedis.JedisPool;
  *
  * @author John Grosh (john.a.grosh@gmail.com)
  */
-public class NowplayingHandler
-{
+public class NowplayingHandler {
     private final Bot bot;
-    private final HashMap<Long,Pair<Long,Long>> lastNP; // guild -> channel,message
+    private final HashMap<Long, Pair<Long, Long>> lastNP; // guild -> channel,message
     private JedisPool pool;
-    
-    public NowplayingHandler(Bot bot)
-    {
+
+    public NowplayingHandler(Bot bot) {
         this.bot = bot;
         this.lastNP = new HashMap<>();
         this.pool = new JedisPool("redis", 6379);
     }
-    
-    public void init()
-    {
-        if(!bot.getConfig().useNPImages())
+
+    public void init() {
+        if (!bot.getConfig().useNPImages())
             bot.getThreadpool().scheduleWithFixedDelay(() -> updateAll(), 0, 5, TimeUnit.SECONDS);
     }
-    
-    public void setLastNPMessage(Message m)
-    {
-        lastNP.put(m.getGuild().getIdLong(), new Pair<>(m.getTextChannel().getIdLong(), m.getIdLong()));
+
+    public void setLastNPMessage(Message m) {
+        lastNP.put(m.getGuild().getIdLong(), new Pair<>(m.getChannel().getIdLong(), m.getIdLong()));
     }
-    
-    public void clearLastNPMessage(Guild guild)
-    {
+
+    public void clearLastNPMessage(Guild guild) {
         lastNP.remove(guild.getIdLong());
     }
-    
-    private void updateAll()
-    {
+
+    private void updateAll() {
         Set<Long> toRemove = new HashSet<>();
-        for(long guildId: lastNP.keySet())
-        {
+        for (long guildId : lastNP.keySet()) {
             Guild guild = bot.getJDA().getGuildById(guildId);
-            if(guild==null)
-            {
+            if (guild == null) {
                 toRemove.add(guildId);
                 continue;
             }
-            Pair<Long,Long> pair = lastNP.get(guildId);
+            Pair<Long, Long> pair = lastNP.get(guildId);
             TextChannel tc = guild.getTextChannelById(pair.getKey());
-            if(tc==null)
-            {
+            if (tc == null) {
                 toRemove.add(guildId);
                 continue;
             }
-            AudioHandler handler = (AudioHandler)guild.getAudioManager().getSendingHandler();
-            Message msg = handler.getNowPlaying(bot.getJDA());
-            if(msg==null)
-            {
+            AudioHandler handler = (AudioHandler) guild.getAudioManager().getSendingHandler();
+            MessageCreateData msg = handler.getNowPlaying(bot.getJDA());
+            if (msg == null) {
                 msg = handler.getNoMusicPlaying(bot.getJDA());
                 toRemove.add(guildId);
             }
-            try 
-            {
-                tc.editMessageById(pair.getValue(), msg).queue(m->{}, t -> lastNP.remove(guildId));
-            } 
-            catch(Exception e) 
-            {
+
+            try {
+                tc.editMessageById(pair.getValue(), new MessageEditBuilder().applyCreateData(msg).build()).queue(m -> {
+                }, t -> lastNP.remove(guildId));
+            } catch (Exception e) {
                 toRemove.add(guildId);
             }
         }
@@ -104,12 +95,11 @@ public class NowplayingHandler
     }
 
     // "event"-based methods
-    public void onTrackUpdate(AudioTrack track)
-    {
+    public void onTrackUpdate(AudioTrack track) {
         // update bot status if applicable
-        if(bot.getConfig().getSongInStatus())
-        {
-            if(track!=null && bot.getJDA().getGuilds().stream().filter(g -> g.getSelfMember().getVoiceState().inVoiceChannel()).count()<=1) {
+        if (bot.getConfig().getSongInStatus()) {
+            if (track != null && bot.getJDA().getGuilds().stream()
+                    .filter(g -> g.getSelfMember().getVoiceState().inAudioChannel()).count() <= 1) {
                 bot.getJDA().getPresence().setActivity(Activity.listening(track.getInfo().title));
 
                 try (Jedis jedis = this.pool.getResource()) {
@@ -120,13 +110,12 @@ public class NowplayingHandler
             }
         }
     }
-    
-    public void onMessageDelete(Guild guild, long messageId)
-    {
-        Pair<Long,Long> pair = lastNP.get(guild.getIdLong());
-        if(pair==null)
+
+    public void onMessageDelete(Guild guild, long messageId) {
+        Pair<Long, Long> pair = lastNP.get(guild.getIdLong());
+        if (pair == null)
             return;
-        if(pair.getValue() == messageId)
+        if (pair.getValue() == messageId)
             lastNP.remove(guild.getIdLong());
     }
 }
