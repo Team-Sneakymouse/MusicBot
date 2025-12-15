@@ -1,0 +1,26 @@
+# Build artifacts
+target/
+*.jar
+
+# Version control
+.git/
+.github/
+.gitignore
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+LICENSE
+
+# Config files (should be mounted as volumes)
+config/
